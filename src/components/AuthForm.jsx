@@ -1,8 +1,9 @@
+// AuthForm.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AuthForm.css";
 
-const AuthForm = ({ role, onClose }) => {
+const AuthForm = ({ role, onClose, setJobSeeker }) => {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
 
@@ -10,15 +11,26 @@ const AuthForm = ({ role, onClose }) => {
     e.preventDefault();
 
     if (isLogin) {
-      // Fake login check for Job Seeker
       if (role === "Job Seeker") {
-        // Redirect to getalljobs
+        // Dummy Job Seeker data
+        const fakeJobSeeker = {
+          name: "John Doe",
+          email: "johndoe@example.com",
+          designation: "Frontend Developer",
+          resume: "https://myresume.com/johndoe",
+          applications: 3,
+        };
+
+        setJobSeeker(fakeJobSeeker);
+        onClose();
         navigate("/getalljobs");
       } else {
         alert(`${role} logged in successfully!`);
+        onClose();
       }
     } else {
       alert(`${role} registered successfully!`);
+      onClose();
     }
   };
 
