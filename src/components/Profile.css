@@ -1,0 +1,29 @@
+.profile-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 25px;
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+
+.profile-card p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #334155;
+}
+
+.profile-card a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.profile-card a:hover {
+  text-decoration: underline;
+}
