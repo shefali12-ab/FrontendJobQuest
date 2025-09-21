@@ -1,24 +1,63 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login, register } from "../api"; // 👈 import our API helper
 import "./AuthForm.css";
 
 const AuthForm = ({ role, onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // form state
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    resumeUrl: "",
+    designation: ""
+  });
 
-    if (isLogin) {
-      // Fake login check for Job Seeker
-      if (role === "Job Seeker") {
-        // Redirect to getalljobs
-        navigate("/getalljobs");
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (isLogin) {
+        // 🔑 login
+        const token = await login(form.email, form.password);
+        localStorage.setItem("jwt", token);
+
+        if (role === "Job Seeker") {
+          navigate("/Jobs");
+        } else if (role === "Employee") {
+          navigate("/employee-dashboard"); // placeholder route
+        } else if (role === "Admin") {
+          navigate("/admin/Dashboard");
+        }
       } else {
-        alert(`${role} logged in successfully!`);
+        // 📝 register
+        if (form.password !== form.confirmPassword) {
+          alert("Passwords do not match");
+          return;
+        }
+
+        const userData = {
+          username: form.username,
+          email: form.email,
+          password: form.password,
+          role: role.toUpperCase().replace(" ", "_"), // e.g. "JOB_SEEKER"
+          designation: form.designation,
+          resumeUrl: form.resumeUrl
+        };
+
+        await register(userData);
+        alert("Registration successful. Please login.");
+        setIsLogin(true); // switch back to login tab
       }
-    } else {
-      alert(`${role} registered successfully!`);
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -51,30 +90,72 @@ const AuthForm = ({ role, onClose }) => {
             <>
               <div className="form-group">
                 <label>Username</label>
-                <input type="text" placeholder="Enter username" required />
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Enter username"
+                  value={form.username}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="form-group">
                 <label>Email</label>
-                <input type="email" placeholder="Enter email" required />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter email"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="form-group">
                 <label>Password</label>
-                <input type="password" placeholder="Enter password" required />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter password"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="form-group">
                 <label>Confirm Password</label>
-                <input type="password" placeholder="Confirm password" required />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm password"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               {role === "Job Seeker" && (
                 <>
                   <div className="form-group">
                     <label>Resume URL</label>
-                    <input type="url" placeholder="Enter resume URL" required />
+                    <input
+                      type="url"
+                      name="resumeUrl"
+                      placeholder="Enter resume URL"
+                      value={form.resumeUrl}
+                      onChange={handleChange}
+                      required
+                    />
                   </div>
                   <div className="form-group">
                     <label>Designation</label>
-                    <input type="text" placeholder="Enter designation" required />
+                    <input
+                      type="text"
+                      name="designation"
+                      placeholder="Enter designation"
+                      value={form.designation}
+                      onChange={handleChange}
+                      required
+                    />
                   </div>
                 </>
               )}
@@ -82,7 +163,14 @@ const AuthForm = ({ role, onClose }) => {
               {role === "Employee" && (
                 <div className="form-group">
                   <label>Designation</label>
-                  <input type="text" placeholder="Enter designation" required />
+                  <input
+                    type="text"
+                    name="designation"
+                    placeholder="Enter designation"
+                    value={form.designation}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               )}
             </>
@@ -92,11 +180,25 @@ const AuthForm = ({ role, onClose }) => {
             <>
               <div className="form-group">
                 <label>Email</label>
-                <input type="email" placeholder="Enter email" required />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter email"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="form-group">
                 <label>Password</label>
-                <input type="password" placeholder="Enter password" required />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter password"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </>
           )}
@@ -115,3 +217,4 @@ const AuthForm = ({ role, onClose }) => {
 };
 
 export default AuthForm;
+
